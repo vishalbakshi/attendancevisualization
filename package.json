@@ -1,0 +1,23 @@
+{
+  "name": "attendancevisualization",
+  "version": "1.0.0",
+  "description": "An app that creates data visualizations for attendance data",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "nodemon src/server.js localhost 8080",
+    "test": "mocha --ui tdd ./src/test"
+  },
+  "dependencies": {
+    "body-parser": "1.18.3",
+    "chai": "4.2.0",
+    "chai-http": "4.2.1",
+    "dotenv": "6.2.0",
+    "express": "4.16.4",
+    "mocha": "5.2.0",
+    "pug": "2.0.3",
+    "tape": "4.9.2"
+  },
+  "devDependencies": {
+    "nodemon": "1.18.4"
+  }
+}
