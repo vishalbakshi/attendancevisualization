@@ -4,9 +4,11 @@ const dotenv = require("dotenv");
 // Setup the basic objects
 dotenv.config();
 const app = express();
+app.set("view engine", "pug");
+app.use(express.static("public"));
 
 app.route("/").get(function(req, res) {
-  res.send("Hello!");
+  res.render("index");
 });
 
 const server = app.listen(8080, function() {
