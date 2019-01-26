@@ -1,7 +1,11 @@
 // This is where the d3 stuff happens
-d3.select("body")
-  .append("svg")
-  .append("circle")
-  .attr("cx", 100)
-  .attr("cy", 100)
-  .attr("r", 5);
+const svg = d3.select("body").append("svg");
+
+d3.csv("data.txt", function(data) {
+  svg
+    .selectAll("text")
+    .data(data)
+    .enter()
+    .append("text")
+    .text((d, i) => d);
+});
