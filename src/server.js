@@ -3,16 +3,10 @@ const dotenv = require("dotenv");
 const calculateADA = require("./calculateADA.js");
 const getAttendanceData = require("./attendanceFileParser.js");
 const getCalendarDayData = require("./calendarDayFileParser.js");
-const fs = require("fs");
 
-// prepare readStream for data file
-let attendanceDataFileStream = fs.createReadStream("./public/data.txt");
-let calendarDayDataFileStream = fs.createReadStream(
-  "./public/calendar_day.txt"
-);
 
-getCalendarDayData(calendarDayDataFileStream);
-getAttendanceData(attendanceDataFileStream, calculateADA);
+// Send the promises to caclulateADA
+calculateADA(getAttendanceData, getCalendarDayData);
 
 dotenv.config();
 const app = express();

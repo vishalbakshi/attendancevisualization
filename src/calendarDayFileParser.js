@@ -1,6 +1,41 @@
+// calendarDayFileParser.js
+
+/*
+
+The purpose of this module is to parse a DDE file from PowerSchool which contains
+the following export field list with Calendar_Day (51) as the current table:
+
+  A
+  B
+  Bell_Schedule_ID
+  C
+  Cycle_Day_ID
+  D
+  Date
+  E
+  F
+  ID
+  InSession
+  MembershipValue
+  Note
+  ScheduleID
+  SchoolID
+  Type
+  Week_Num
+
+*/
+
+const fs = require("fs");
+
 let chunkData = "";
 let headers;
 let calendarDayData = {};
+
+let calendarDayDataFileStream = fs.createReadStream(
+  "./public/calendar_day.txt"
+);
+
+
 
 let monthDateRange = {
   M1A: { start: "07/23/18", end: "08/17/18" },
@@ -17,6 +52,59 @@ let monthDateRange = {
   M11: { start: "05/27/19", end: "06/21/19" }
 };
 
+
+let getCalendarData = new Promise(function(resolve, reject){
+  calendarDayDataFileStream
+    .on('error', function(err){
+      reject(err);
+    })
+    .on("data", function(chunk) {
+      chunkData += chunk;
+    })
+    .on("end", function(err) {
+      if (err) {
+        return console.log("Error in parsing calendar day data: " + err);
+      } else {
+
+        // Convert Buffer to an Array of strings
+        let dataLines = chunkData.toString().split("\r");
+
+        dataLines.forEach(function(line) {
+
+          // Convert each row into an Array
+          let values = line.split("\t");
+
+          // Extract the headers
+          if (values.includes("Date")) {
+            headers = values;
+          } else {
+            values.forEach(function(el, idx) {
+
+              // Remove the double quotes from PS export
+              el = el.replace('"', "");
+              el = el.replace('"', "");
+
+              // Assign field to corresponding key
+              // Use headers as keys
+              if (!calendarDayData.hasOwnProperty(headers[idx])) {
+                calendarDayData[headers[idx]] = [el];
+              } else {
+                calendarDayData[headers[idx]].push(el);
+              }
+            });
+          }
+        });
+
+        console.log("Done reading file in calendarDayFileParser.js");
+        
+        // Send the calendarDayData object back
+        resolve(calendarDayData);
+      }
+    });
+})
+
+
+/*
 function getCalendarData(dataFileStream, cb) {
   dataFileStream
     .on("data", function(chunk) {
@@ -26,29 +114,42 @@ function getCalendarData(dataFileStream, cb) {
       if (err) {
         return console.log("Error in parsing calendar day data: " + err);
       } else {
+
+        // Convert Buffer to an Array of strings
         let dataLines = chunkData.toString().split("\r");
+
         dataLines.forEach(function(line) {
+
+          // Convert each row into an Array
           let values = line.split("\t");
+
+          // Extract the headers
           if (values.includes("Date")) {
             headers = values;
           } else {
             values.forEach(function(el, idx) {
+
+              // Remove the double quotes from PS export
               el = el.replace('"', "");
               el = el.replace('"', "");
+
+              // Assign field to corresponding key
+              // Use headers as keys
               if (!calendarDayData.hasOwnProperty(idx)) {
-                calendarDayData[idx] = [el];
+                calendarDayData[headers[idx]] = [el];
               } else {
-                calendarDayData[idx].push(el);
+                calendarDayData[headers[idx]].push(el);
               }
             });
           }
         });
-        for (let key in calendarDayData) {
-          console.log(key, calendarDayData[key].length);
-        }
+
         console.log("Done reading file in calendarDayFileParser.js");
+
+        // Send the calendarDayData object back
+        cb(calendarDayData);
       }
     });
 }
-
+*/
 module.exports = getCalendarData;
