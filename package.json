@@ -16,7 +16,7 @@
     "express": "4.16.4",
     "mocha": "5.2.0",
     "node-fetch": "2.3.0",
-    "pug": "2.0.3",
+    "pug": "3.0.1",
     "tape": "4.9.2"
   },
   "devDependencies": {
